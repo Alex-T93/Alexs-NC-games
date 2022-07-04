@@ -8,7 +8,7 @@ const {
   handlePSQLErrors,
   handleCustomErrors,
   handleInternalServerErrors,
-} = require("./controllers/errors.js");
+} = require("./controllers/errors_controller.js");
 
 
 const { getAllCategories } = require("./controllers/categories_controller.js")
