@@ -142,3 +142,33 @@ describe("PATCH /api/reviews/:review_id - Error Handling", () => {
       });
   });
 });
+
+describe("GET /api/users", () => {
+  test("200: Responds with an array of objects, with username, name,avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toBeInstanceOf(Array);
+        expect(users).toHaveLength(4);
+        users.forEach((users) => {
+          expect(users).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
+describe("GET Error Handling", () => {
+  test("404: Responds with a correct error message for an invalid get request path", () => {
+    return request(app)
+      .get("/api/notfound")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Not Found");
+      });
+  });
+});
