@@ -29,12 +29,6 @@ exports.updateReviewById = (body, params) => {
         msg: "Invalid Request: Please enter a number",
       });
     }
-    if (Object.keys(body).length > 1) {
-      return Promise.reject({
-        status: 400,
-        msg: "Invalid Request: Please only enter one input",
-      });
-    }
     const queryString =
       "UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *";
     return db
