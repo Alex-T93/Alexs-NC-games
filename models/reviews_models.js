@@ -4,7 +4,9 @@ const format = require("pg-format");
 
 exports.fetchReviewById = (params) => {
   const { review_id } = params;
-  const queryString = "SELECT * FROM Reviews WHERE review_id = $1;";
+  let queryString = `SELECT reviews.*, COUNT(comments.comment_id)::INT AS comment_count 
+  FROM reviews
+  LEFT JOIN comments USING (review_id) WHERE reviews.review_id = $1 GROUP BY reviews.review_id`;
   return db.query(queryString, [review_id])
 
   .then(({ rows: reviews }) => {
@@ -13,6 +15,8 @@ exports.fetchReviewById = (params) => {
     } else return reviews[0];
   });
 };
+
+
 
 exports.updateReviewById = (body, params) => {
     const { inc_votes } = body;
