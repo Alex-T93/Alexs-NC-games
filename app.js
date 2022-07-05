@@ -13,15 +13,19 @@ const {
 
 const { getAllCategories } = require("./controllers/categories_controller.js")
 const {getReviewByID, patchReviewById} = require("./controllers/reviews_controller.js")
+const { getAllUsers } = require("./controllers/users_controller.js")
 
-app.get("/api/categories",getAllCategories);
-app.get("/api/reviews/:review_id",getReviewByID)
+
+app.get("/api/categories", getAllCategories);
+app.get("/api/reviews/:review_id", getReviewByID)
 app.patch("/api/reviews/:review_id", patchReviewById);
+app.get("/api/users", getAllUsers);
+
 
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "Not Found" });
 });
-// app.use(handleInvalidPaths);
+
 app.use(handlePSQLErrors);
 app.use(handleCustomErrors);
 app.use(handleInternalServerErrors);
