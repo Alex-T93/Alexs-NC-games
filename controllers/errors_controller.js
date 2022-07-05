@@ -1,3 +1,6 @@
+const app = require("../app");
+
+
 
 exports.handlePSQLErrors = (err, req, res, next) => {
     if (err.code === "22P02") {
