@@ -1,3 +1,7 @@
+const app = require("../app");
+exports.handleInvalidPaths = (req, res) => {
+  res.status(404).send({ msg: "Not Found" });
+};
 
 exports.handlePSQLErrors = (err, req, res, next) => {
     if (err.code === "22P02") {
