@@ -48,4 +48,54 @@ exports.updateReviewById = (body, params) => {
         }
       });
   };
+
+  exports.fetchAllReviews = (sort_by = "created_at", order = "desc") => {
+    const correctSortBy = [
+      "review_id",
+      "title",
+      "designer",
+      "owner",
+      "review_img_url",
+      "review_body",
+      "category",
+      "created_at",
+      "votes",
+      "comment_count",
+    ];
+    const correctOrder = ["desc", "asc"];
   
+    
+  let queryString = `
+  SELECT
+  reviews.review_id,
+  reviews.title,
+  reviews.designer,
+  reviews.owner,
+  reviews.review_img_url,
+  reviews.review_body,
+  reviews.category,
+  reviews.created_at,
+  reviews.votes,
+  COUNT(comment_id)::int AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  USING (review_id) GROUP BY reviews.review_id`;
+
+  if (!correctSortBy.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid request: Enter a valid sort_by query",
+    });
+  }
+  if (!correctOrder.includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid request: Enter a valid order query",
+    });
+  } else {
+    queryString += ` ORDER BY ${sort_by} ${order.toUpperCase()}`;
+  }
+  return db.query(queryString).then(({ rows: reviews }) => {
+    return reviews;
+  });
+};

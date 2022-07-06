@@ -49,20 +49,21 @@ describe("GET Error Handling", () => {
 describe("GET /api/reviews/:review_id", () => {
   test("200: Responds with an objects containing correct keys", () => {
     return request(app)
-      .get("/api/reviews/1")
+      .get("/api/reviews/2")
       .expect(200)
       .then(({ body: { review } }) => {
         expect(review).toEqual(
           expect.objectContaining({
-            category: "euro game",
-            created_at: "2021-01-18T10:00:20.514Z",
-            designer: "Uwe Rosenberg",
-            owner: "mallionaire",
-            review_body: "Farmyard fun!",
-            review_id: 1,
+            category: "dexterity",
+            created_at: "2021-01-18T10:01:41.251Z",
+            designer: "Leslie Scott",
+            owner: "philippaclaire9",
+            review_body: "Fiddly fun for all the family",
+            review_id: 2,
             review_img_url: "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-            title: "Agricola",
-            votes: 1,
+            title: "Jenga",
+            votes: 5,
+            comment_count: 3
           })
         );
       });
@@ -89,7 +90,7 @@ describe("GET /api/reviews/:review_id - Error Handling", () => {
 
 
 describe("PATCH /api/reviews/:review_id", () => {
-  test("200: Responds with an articles object with the votes updated correctly", () => {
+  test("200: Responds with an reviews object with the votes updated correctly", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send({ inc_votes: 100 })
@@ -105,7 +106,7 @@ describe("PATCH /api/reviews/:review_id", () => {
             owner: "mallionaire",
             review_body: "Farmyard fun!",
             review_img_url: "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-            votes: 101
+            votes: 101,
           })
         );
       });
@@ -169,6 +170,65 @@ describe("GET Error Handling", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toEqual("Not Found");
+      });
+  });
+});
+
+
+describe("GET /api/reviews/", () => {
+  test("200: Responds with an reviews object sorted by the creation date in descending order by default", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSorted("created_at", { descending: true });
+        reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              designer: expect.any(String),
+              owner: expect.any(String),
+              review_img_url: expect.any(String),
+              review_body: expect.any(String),
+              category: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("200: Responds with reviews object sorted by the date created in descending order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=created_at&order=desc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSorted("created_at", { descending: true });
+      });
+  });
+
+});
+describe("GET Error Handling", () => {
+  test("400: Responds with Invalid request:  Enter a valid sort by or order error message for an invalid sort by query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=incorrectquery")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual(
+          "Invalid request: Enter a valid sort_by query"
+        );
+      });
+  });
+  test("400: Responds with 'Invalid request:  Enter a valid sort by or order' error message for an invalid order query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=created_at&order=incorrectrder")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual(
+          "Invalid request: Enter a valid order query"
+        );
       });
   });
 });
