@@ -1,4 +1,3 @@
-const { fetchReviewById } = require("../models/reviews_models.js")
 const { fetchCommentByReviewId } = require("../models/comments_models.js");
 
 exports.getCommentByReviewId = (req, res, next) => {
@@ -11,4 +10,3 @@ const { review_id } = req.params;
       next(err)
   })
 };
-

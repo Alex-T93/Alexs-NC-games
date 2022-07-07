@@ -182,6 +182,7 @@ describe("GET /api/reviews/", () => {
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSorted("created_at", { descending: true });
+        expect(reviews).toHaveLength(13)
         reviews.forEach((review) => {
           expect(review).toEqual(
             expect.objectContaining({
@@ -256,9 +257,10 @@ describe("GET /api/reviews/:review_id/comments", () => {
       return request(app)
       .get("/api/reviews/1/comments")
       .expect(200)
-      .then(({body}) => {
-        expect(body.comments).toBeInstanceOf(Array);
-        expect(body.comments).toHaveLength(1)
+      .then(({body: { comments }}) => {
+        console.log(comments)
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(0)
       });
     });
   });
