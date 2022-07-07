@@ -1,4 +1,4 @@
-const { fetchCommentByReviewId } = require("../models/comments_models.js");
+const { fetchCommentByReviewId, addCommentByReviewId } = require("../models/comments_models.js");
 
 exports.getCommentByReviewId = (req, res, next) => {
   
@@ -9,4 +9,16 @@ const { review_id } = req.params;
   }) .catch((err) => {
       next(err)
   })
+};
+exports.postCommentByReviewId = (req, res, next) => {
+  const { review_id } = req.params;
+  const { username, body } = req.body;
+
+  addCommentByReviewId(review_id, username, body)
+    .then((postedComment) => {
+      res.status(201).send({ postedComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

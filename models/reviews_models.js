@@ -24,13 +24,13 @@ exports.updateReviewById = (body, params) => {
     if (!inc_votes) {
       return Promise.reject({
         status: 400,
-        msg: "Invalid Request: Please enter the correct input",
+        msg: "Invalid request: Please enter the correct input",
       });
     }
     if (isNaN(inc_votes)) {
       return Promise.reject({
         status: 400,
-        msg: "Invalid Request: Please enter a number",
+        msg: "Invalid request: Please enter a number",
       });
     }
     const queryString =
