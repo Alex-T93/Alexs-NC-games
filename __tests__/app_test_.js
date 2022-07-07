@@ -140,7 +140,7 @@ describe("PATCH /api/reviews/:review_id - Error Handling", () => {
       .send({ inc_votes: "dog" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid Request: Please enter a number");
+        expect(msg).toBe("Invalid request: Please enter a number");
       });
   });
 });
@@ -258,14 +258,13 @@ describe("GET /api/reviews/:review_id/comments", () => {
       .get("/api/reviews/1/comments")
       .expect(200)
       .then(({body: { comments }}) => {
-        console.log(comments)
         expect(comments).toBeInstanceOf(Array);
         expect(comments).toHaveLength(0)
       });
     });
   });
 
-describe("GET /api/reviews/:review_id/comments - Error Handling", () => {
+describe("GET Error Handling", () => {
   test("404, responds with 'Not Found' error message when path is invalid", () => {
     return request(app)
       .get("/api/reviews/2/nocomments")
@@ -285,4 +284,91 @@ describe("GET /api/reviews/:review_id/comments - Error Handling", () => {
 });
 
   
-  
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("201: Creates a new comment and responds with the posted comment", () => {
+    const comment = { username: "bainesface", body: "One of my favourie games!" };
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body: { postedComment } }) => {
+        expect(postedComment).toEqual(
+          expect.objectContaining({
+            comment_id: 7,
+            review_id: 4,
+            author: "bainesface",
+            body: "One of my favourie games!",
+            created_at: expect.any(String),
+            votes: 0,
+          })
+        );
+      });
+  });
+});
+describe("POST Error Handling", () => {
+  test("400: Responds with 'Bad request' error message when path is invalid", () => {
+    const newComment = {
+      username: "bainesface",
+      body: "One of my favourie games!",
+    };
+    return request(app)
+      .post("/api/reviews/nanid/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("400: Responds with 'Bad Request: Please enter a username' error message when the comment contains no body", () => {
+    const newComment = {
+      username: "",
+      body: "One of my favourie games!",
+    };
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: Please enter a username");
+      });
+  });
+  test("400: Responds with 'Bad request: Enter a valid comment' error message when the comment contains no body", () => {
+    const newComment = {
+      username: "bainesface",
+      body: "",
+    };
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: Enter a valid comment");
+      });
+  });
+  test("400: Responds with 'Bad request: Incorrect valid data type' error message when incorrect data type is provieded for the comment", () => {
+    const newComment = {
+      username: "bainesface",
+      body: 2,
+    };
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: Incorrect valid data type");
+      });
+  });
+  test("400: Responds with 'Bad request: Username does not exist' when incorrect username", () => {
+    const newComment = {
+      username: "not_a_username",
+      body: "One of my favourie games!",
+    };
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: Username does not exist");
+      });
+  });
+});
