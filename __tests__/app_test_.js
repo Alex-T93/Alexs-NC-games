@@ -273,7 +273,7 @@ describe("GET Error Handling", () => {
         expect(body.msg).toBe("Not Found");
       });
   });
-  test("404: Responds with 'Review ID Not Found' error message when article id does not exist", () => {
+  test("404: Responds with 'Review ID Not Found' error message when review id does not exist", () => {
     return request(app)
       .get("/api/reviews/0/comments")
       .expect(404)
@@ -306,7 +306,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 describe("POST Error Handling", () => {
-  test("400: Responds with 'Bad request' error message when path is invalid", () => {
+  test("400: Responds with 'Bad request' error message when given an invalid ID", () => {
     const newComment = {
       username: "bainesface",
       body: "One of my favourie games!",
@@ -369,6 +369,89 @@ describe("POST Error Handling", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad request: Username does not exist");
+      });
+  });
+});
+
+
+describe("GET /GET /api/reviews (queries)", () => {
+  test("200: Responds with an reviews object sorted by title in descending order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title&order=desc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200: Responds with an reviews object sorted by designer in ascending order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=designer&order=asc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toBeSortedBy("designer", { ascending: true });
+      });
+  });
+  test("200: Responds with an reviews object filter by the category of social deduction", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(11);
+        reviews.forEach((review) => {
+          expect(review.category).toBe("social deduction");
+          expect(review).toMatchObject({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            designer: expect.any(String),
+            created_at: expect.any(String),
+            category: "social deduction",
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("Responds with an reviews object filtered by the category of dexterity", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(1);
+        reviews.forEach((review) => {
+          expect(review.category).toBe("dexterity");
+          expect(review).toMatchObject({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            designer: expect.any(String),
+            created_at: expect.any(String),
+            category: "dexterity",
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("200: Responds with an reviews object sorted by the review id in descending order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=review_id&order=desc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("review_id", {
+          descending: true,
+        });
+      });
+  });
+  test("200: Responds with an reviews object sorted by comment count in ascending order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=comment_count&order=asc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(13);
+        expect(reviews).toBeSortedBy("comment_count", { ascending: true });
       });
   });
 });
