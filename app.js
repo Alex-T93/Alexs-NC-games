@@ -14,7 +14,7 @@ const {
 const { getAllCategories } = require("./controllers/categories_controller.js")
 const {getReviewByID, patchReviewById, getReviews} = require("./controllers/reviews_controller.js")
 const { getAllUsers } = require("./controllers/users_controller.js")
-const { getCommentByReviewId, postCommentByReviewId } = require("./controllers/comments_controller.js");
+const { getCommentByReviewId, postCommentByReviewId, deleteCommentByCommentId } = require("./controllers/comments_controller.js");
 
 const app = express();
 app.use(express.json());
@@ -26,6 +26,8 @@ app.patch("/api/reviews/:review_id", patchReviewById);
 app.get("/api/users", getAllUsers);
 app.get("/api/reviews", getReviews);
 app.post("/api/reviews/:review_id/comments", postCommentByReviewId)
+app.delete("/api/comments/:comment_id", deleteCommentByCommentId)
+
 
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "Not Found" });

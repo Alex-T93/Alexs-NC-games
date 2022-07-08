@@ -455,3 +455,33 @@ describe("GET /GET /api/reviews (queries)", () => {
       });
   });
 });
+
+describe("DELETE  /api/comments/:comment_id", () => {
+  test("204: Deletes the comment ", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+});
+
+describe("DELETE  Error Handling", () => {
+  test("400: Responds with 'Bad request' message when provided invalid delete path", () => {
+    return request(app)
+      .delete("/api/comments/no_comment_id")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("404: Responds with 'Bad request: No comment to delete' message when provided invalid delete path", () => {
+    return request(app)
+      .delete("/api/comments/200")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: No comment to delete");
+      });
+  });
+});
