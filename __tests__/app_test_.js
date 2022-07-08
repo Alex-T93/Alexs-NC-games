@@ -485,3 +485,30 @@ describe("DELETE  Error Handling", () => {
       });
   });
 });
+
+describe.only("/api", () => {
+  test("200: Responds with a JSON object describing all available endpoints on the API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toBeInstanceOf(Object);
+        expect(Object.keys(endpoints)).toHaveLength(9);
+        expect(endpoints["GET /api"].description).toBe(
+          "Serves up a json representation of all the available endpoints of the api"
+        );
+        expect(endpoints["GET /api/categories"].queries).toEqual([]);
+        expect(endpoints["GET /api/reviews"].queries).toEqual([
+          "category",
+          "sort_by",
+          "order",
+        ]);
+        expect(endpoints["DELETE /api/comments/:comment_id"].description).toBe(
+          "Deletes a comment for a specified comment id and serves no content with 204 status status code"
+        );
+        expect(
+          endpoints["DELETE /api/comments/:comment_id"].exampleResponse
+        ).toEqual({});
+      });
+  });
+});
