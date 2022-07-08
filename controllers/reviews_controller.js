@@ -1,4 +1,4 @@
-const { fetchReviewById, updateReviewById, fetchAllReviews }= require("../models/reviews_models.js");
+const { fetchReviewById, updateReviewById, fetchReviews }= require("../models/reviews_models.js");
 
 
 
@@ -24,9 +24,9 @@ const { fetchReviewById, updateReviewById, fetchAllReviews }= require("../models
       });
   };
 
-exports.getAllReviews = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  fetchAllReviews(sort_by, order)
+exports.getReviews = (req, res, next) => {
+  const { sort_by, order, category } = req.query;
+  fetchReviews(sort_by, order, category)
     .then((reviews) => {
       res.status(200).send({ reviews });
     })

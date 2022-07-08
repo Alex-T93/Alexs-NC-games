@@ -53,7 +53,7 @@ exports.addCommentByReviewId = (review_id, username, body) => {
   
     const values = [review_id, username, body];
   
-    return fetchAllUsers().then((users) => {
+   return fetchAllUsers().then((users) => {
       const allUsernames = users.map((user) => {
         return user.username;
       });
@@ -69,5 +69,5 @@ exports.addCommentByReviewId = (review_id, username, body) => {
             return postedComment[0];
           });
       }
-    });
-  };
+    })
+}

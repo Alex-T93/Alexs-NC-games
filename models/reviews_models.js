@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const format = require("pg-format");
+const fetchAllCategories = require("./categories_models.js");
 
 
 exports.fetchReviewById = (params) => {
@@ -48,7 +49,11 @@ exports.updateReviewById = (body, params) => {
         }
       });
   };
-  exports.fetchAllReviews = (sort_by = "created_at", order = "desc") => {
+
+
+
+  exports.fetchReviews = (sort_by = "created_at", order = "desc", category) => {
+    
     const correctSortBy = [
       "review_id",
       "title",
@@ -62,7 +67,7 @@ exports.updateReviewById = (body, params) => {
       "comment_count",
     ];
     const correctOrder = ["desc", "asc"];
-  
+    const queryValues = []
   
   let queryString = `
   SELECT
@@ -77,7 +82,7 @@ exports.updateReviewById = (body, params) => {
   COUNT(comment_id)::int AS comment_count
   FROM reviews
   LEFT JOIN comments
-  USING (review_id) GROUP BY reviews.review_id`;
+  USING (review_id)`;
   
   if (!correctSortBy.includes(sort_by)) {
     return Promise.reject({
@@ -90,10 +95,36 @@ exports.updateReviewById = (body, params) => {
       status: 400,
       msg: "Invalid request: Enter a valid order query",
     });
-  } else {
-    queryString += ` ORDER BY ${sort_by} ${order.toUpperCase()}`;
-  }
-  return db.query(queryString).then(({ rows: reviews }) => {
-    return reviews;
-  });
-  };
+  } 
+  if(category){
+        queryString += `WHERE category = $1`
+        queryValues.push(category);
+      } 
+      queryString += `GROUP BY reviews.review_id`; 
+      queryString += ` ORDER BY ${sort_by} ${order.toUpperCase()}`;
+      return db.query(queryString, queryValues).then(({ rows: reviews }) => {
+        if (!reviews[0]) {
+          return fetchAllCategories().then((category) => {
+            const allCategories = category.map((category) => {
+              return category.slug;
+            });
+            if (!allCategories.includes(category)) {
+              return Promise.reject({
+                status: 400,
+                msg: "Bad request: This category does not exist",
+              });
+            }
+          });
+        } else {
+          return reviews;
+        }
+    });
+};
+
+     
+    
+    
+    
+   
+     
+    
