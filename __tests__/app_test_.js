@@ -394,7 +394,7 @@ describe("GET /GET /api/reviews (queries)", () => {
   });
   test("200: Responds with an reviews object filter by the category of social deduction", () => {
     return request(app)
-      .get("/api/reviews?category=social deduction")
+      .get("/api/reviews?category=social+deduction")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeInstanceOf(Array);

@@ -104,11 +104,11 @@ exports.updateReviewById = (body, params) => {
       queryString += ` ORDER BY ${sort_by} ${order.toUpperCase()}`;
       return db.query(queryString, queryValues).then(({ rows: reviews }) => {
         if (!reviews[0]) {
-          return fetchAllCategories().then((category) => {
-            const allCategories = category.map((category) => {
+          return fetchAllCategories().then((categories) => {
+            categories.map((category) => {
               return category.slug;
             });
-            if (!allCategories.includes(category)) {
+            if (!categories.includes(category)) {
               return Promise.reject({
                 status: 400,
                 msg: "Bad request: This category does not exist",
