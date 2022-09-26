@@ -3,6 +3,7 @@ const express = require("express");
 
 
 
+
 const {
   handlePSQLErrors,
   handleCustomErrors,
@@ -16,7 +17,8 @@ const {getReviewByID, patchReviewById, getReviews} = require("./controllers/revi
 const { getAllUsers } = require("./controllers/users_controller.js")
 const { getCommentByReviewId, postCommentByReviewId, deleteCommentByCommentId } = require("./controllers/comments_controller.js");
 
-
+const cors = require('cors')
+app.use(cors());
 
 const app = express();
 app.use(express.json());
